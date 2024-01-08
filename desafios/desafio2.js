@@ -1,8 +1,13 @@
 const fs = require("fs/promises");
 
+async function getData() {
+    let res = await fs.readFile("./products.json", "utf-8");
+    let data = JSON.parse(res);
+    return data;
+}
 class ProductManager {
-    constructor(path) {
-        this.path = path;
+    constructor() {
+        this.path = "./products.json";
         this.products = [];
     }
 
@@ -13,9 +18,7 @@ class ProductManager {
         }
 
         try {
-            let res = await fs.readFile(this.path, "utf-8");
-            let data = JSON.parse(res);
-            this.products = data;
+            this.products = await getData();
             if (!this.products.some((product) => product.code === code)) {
                 let nextId = this.products[this.products.length - 1].id + 1;
                 let product = {
@@ -54,8 +57,7 @@ class ProductManager {
 
     async getProducts() {
         try {
-            let res = await fs.readFile(this.path, "utf-8");
-            let data = JSON.parse(res);
+            let data = await getData();
             console.log(data);
         } catch (err) {
             console.log(this.products);
@@ -65,8 +67,7 @@ class ProductManager {
 
     async getProductById(id) {
         try {
-            let res = await fs.readFile(this.path, "utf-8");
-            let data = JSON.parse(res);
+            let data = await getData();
             let product = data.find((element) => id === element.id);
             console.log(product ?? "No product exists with the requested id");
         } catch (err) {
@@ -77,10 +78,7 @@ class ProductManager {
 
     async updateProduct(id, { ...product }) {
         try {
-            let res = await fs.readFile(this.path, "utf-8");
-            let data = JSON.parse(res);
-            this.products = data;
-
+            this.products = await getData();
             let productIndex = data.findIndex((product) => id === product.id);
 
             if (productIndex !== -1) {
@@ -102,9 +100,7 @@ class ProductManager {
 
     async deleteProduct(id) {
         try {
-            let res = await fs.readFile(this.path, "utf-8");
-            let data = JSON.parse(res);
-            this.products = data;
+            this.products = await getData();
 
             let productIndex = data.findIndex((product) => id === product.id);
 
@@ -118,21 +114,17 @@ class ProductManager {
             console.log("No products were found");
         }
     }
-
-    async unlinkProducts() {
-        await fs.unlink(this.path);
-    }
 }
 
 // PROCESO DE TESTING
 
-const productManager = new ProductManager("./products.json");
+const productManager = new ProductManager();
 // productManager.addProduct({
-//     title: "producto prueba",
+//     title: "producto prueba 2",
 //     description: "Este es un producto prueba",
 //     price: 200,
 //     thumbnail: "Sin imagen",
-//     code: "abc123",
+//     code: "abc124",
 //     stock: 25,
 // });
 // productManager.getProducts();
@@ -143,4 +135,3 @@ const productManager = new ProductManager("./products.json");
 //     price: 1000,
 // });
 // productManager.deleteProduct(1);
-productManager.unlinkProducts();
