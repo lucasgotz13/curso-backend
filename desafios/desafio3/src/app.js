@@ -1,5 +1,5 @@
 const express = require("express");
-const ProductManager = require("../desafio2/desafio2.js");
+const ProductManager = require("./ProductManager");
 
 const app = express();
 const productManager = new ProductManager();

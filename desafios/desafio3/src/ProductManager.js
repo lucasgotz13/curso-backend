@@ -58,10 +58,9 @@ class ProductManager {
     async getProducts() {
         try {
             let data = await getData();
-            console.log(data);
+            return data;
         } catch (err) {
-            console.log(this.products);
-            return;
+            return this.products;
         }
     }
 
@@ -69,9 +68,9 @@ class ProductManager {
         try {
             let data = await getData();
             let product = data.find((element) => id === element.id);
-            console.log(product ?? "No product exists with the requested id");
+            return product ?? "No product exists with the requested id";
         } catch (err) {
-            console.log("No products were found");
+            return "No products were found";
             return;
         }
     }
@@ -116,9 +115,11 @@ class ProductManager {
     }
 }
 
+module.exports = ProductManager;
+
 // PROCESO DE TESTING
 
-const productManager = new ProductManager();
+// const productManager = new ProductManager();
 // productManager.addProduct({
 //     title: "producto prueba 2",
 //     description: "Este es un producto prueba",
