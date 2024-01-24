@@ -1,11 +1,11 @@
-const fs = require("fs/promises");
+import { promises as fs } from "fs";
 
 async function getData() {
     let res = await fs.readFile("./products.json", "utf-8");
     let data = JSON.parse(res);
     return data;
 }
-class ProductManager {
+export default class ProductManager {
     constructor() {
         this.path = "./products.json";
         this.products = [];
@@ -65,31 +65,35 @@ class ProductManager {
     async getProductById(id) {
         try {
             let data = await getData();
-            let product = data.find((element) => id === element.id);
+            let product = data.find((element) => parseInt(id) === element.id);
             return product ?? "No product exists with the requested id";
         } catch (err) {
             return "No products were found";
-            return;
         }
     }
 
     async updateProduct(id, { ...product }) {
         try {
             this.products = await getData();
-            let productIndex = data.findIndex((product) => id === product.id);
+            let productIndex = this.products.findIndex(
+                (product) => parseInt(id) === product.id
+            );
 
             if (productIndex !== -1) {
                 this.products[productIndex] = {
                     ...this.products[productIndex],
                     ...product,
                 };
+                await fs.writeFile(this.path, JSON.stringify(this.products));
+                return true;
             } else {
                 console.log("The product with the following id wasn't found");
+                return false;
             }
-            await fs.writeFile(this.path, JSON.stringify(this.products));
         } catch (err) {
             console.log(
-                "No products were found. Instead try adding a new product"
+                "No products were found. Instead try adding a new product",
+                err
             );
             return;
         }
@@ -99,21 +103,24 @@ class ProductManager {
         try {
             this.products = await getData();
 
-            let productIndex = data.findIndex((product) => id === product.id);
+            let productIndex = this.products.findIndex(
+                (product) => parseInt(id) === product.id
+            );
 
             if (productIndex !== -1) {
                 this.products.splice(productIndex, 1);
                 await fs.writeFile(this.path, JSON.stringify(this.products));
+                return true;
             } else {
                 console.log("The product with the following id does not exist");
+                return false;
             }
         } catch (err) {
             console.log("No products were found");
+            return;
         }
     }
 }
-
-module.exports = ProductManager;
 
 // PROCESO DE TESTING
 

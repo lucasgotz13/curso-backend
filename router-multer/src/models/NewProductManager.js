@@ -1,42 +1,42 @@
-// ejemplo del profe
-import { promises as fs } from "fs";
+import { promises as fs } from "fs"; //fs.promises
 import crypto from "crypto";
+
+//crypto.randomBytes(16).toString('hex') //Id unicos
 
 export class ProductManager {
     constructor(path) {
-        this.path = path;
         this.products = [];
+        this.path = path;
     }
-
-    static id = 0;
 
     async getProducts() {
-        const products = JSON(await fs.readFile(this.path, "utf-8"));
-        return products;
+        const prods = JSON.parse(await fs.readFile(this.path, "utf-8"));
+        return prods;
     }
 
-    async getProductsById(id) {
-        const products = JSON(await fs.readFile(this.path, "utf-8"));
-        const product = products.find((prod) => prod.id === id);
-        return product;
+    async getProductById(id) {
+        const prods = JSON.parse(await fs.readFile(this.path, "utf-8"));
+        const prod = prods.find((producto) => producto.id === id);
+        return prod;
     }
 
     async addProduct(prod) {
-        const products = JSON(await fs.readFile(this.path, "utf-8"));
-        const prodExists = products.find(
-            (producto) => prod.code === producto.code
-        );
-        if (prodExists) return false;
-        prod.id = crypto.randomBytes(16).toString("hex"); // id unico
-        products.push(prod);
-        await fs.writeFile(this.path, JSON.stringify(products));
-        return true;
+        const prods = JSON.parse(await fs.readFile(this.path, "utf-8"));
+        const existProd = prods.find((producto) => producto.code === prod.code);
+        if (existProd) {
+            //Si existe el producto retorno false
+            return false;
+        } else {
+            prod.id = crypto.randomBytes(16).toString("hex");
+            prods.push(prod);
+            await fs.writeFile(this.path, JSON.stringify(prods));
+            return true;
+        }
     }
 
-    async updateProduct(id, prod) {
-        const products = JSON(await fs.readFile(this.path, "utf-8"));
-        const prod = products.find((producto) => producto.id === id);
-
+    async updateProduct(id, producto) {
+        const prods = JSON.parse(await fs.readFile(this.path, "utf-8"));
+        const prod = prods.find((producto) => producto.id === id);
         if (prod) {
             prod.title = producto.title;
             prod.description = producto.description;
@@ -44,8 +44,26 @@ export class ProductManager {
             prod.stock = producto.stock;
             prod.thumbnail = producto.thumbnail;
             prod.code = producto.code;
-            products.push(prod);
-            await fs.writeFile(this.paths, JSON.stringify(products));
+            prods.push(prod);
+            await fs.writeFile(this.path, JSON.stringify(prods));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async deleteProduct(id) {
+        const prods = JSON.parse(await fs.readFile(this.path, "utf-8"));
+        const prod = prods.find((producto) => producto.id === id);
+
+        if (prod) {
+            await fs.writeFile(
+                this.path,
+                JSON.stringify(prods.filter((producto) => producto.id !== id))
+            );
+            return true;
+        } else {
+            return false;
         }
     }
 }

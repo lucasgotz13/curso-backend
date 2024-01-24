@@ -1,0 +1,15 @@
+<div>
+    <h1>¡Hola, {{user.name}}! ¡Qué gusto verte!</h1>
+    {{#if role}}
+    <p>La lista de elementos es la siguiente: </p>
+    {{#each FOODS}}
+        <div style="display: flex; gap: 5;">
+            <p>{{this.name}}</p>
+            <p>{{this.price}}</p>
+        </div>
+    {{/each}} 
+    {{else}}
+    <p>No tienes permisos para ver la lista de alimentos</p>
+    {{/if}}
+</div>
+<script src="/js/index.js"></script>
